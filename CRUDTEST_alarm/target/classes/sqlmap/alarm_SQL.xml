@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.mapper.AlarmMapper">
+	<insert id="insertAlarm" parameterType="alarmVO" useGeneratedKeys="true">
+		<selectKey keyProperty="alarmNo" order="BEFORE" resultType="int">
+			select seq_alarm.nextval from dual
+		</selectKey>
+		<if test="alarmType == '게시글'">
+			insert into alarm(
+				alarm_no, mem_no, alarm_type, alarm_status, alarm_date, alarm_url, alarm_receiver
+			)values(
+				#{alarmNo}, #{memNo}, #{alarmType}, 0, sysdate, #{alarmUrl}, #{alarmReceiver}
+			)
+		</if>
+		<if test="alarmType == '댓글'">
+			insert into alarm a (
+				alarm_no, mem_no, alarm_type, alarm_status, alarm_date, alarm_url, alarm_receiver
+			)values(
+				#{alarmNo}, #{memNo}, #{alarmType}, 0, sysdate, #{alarmUrl}, 
+				(select mem_no
+				from member m, board b
+				where b.bono = substr(#{alarmUrl},instr(#{alarmUrl},'boNo=',-1) + 5)
+				and b.bowriter = m.mem_id))
+		</if>
+	</insert>
+	
+	<select id="alarmCheck" parameterType="int" resultType="alarmVO">
+		select * 
+		from alarm
+		where alarm_status = 0
+		and alarm_receiver = #{memNo}
+		and alarm_type = '게시글'
+		
+		union all
+		
+		select a.*
+		from alarm a,
+			 board b,
+			 member c
+		where a.alarm_status = 0
+		and a.alarm_type = '댓글'
+		and substr(a.alarm_url,instr(a.alarm_url,'boNo=',-1) + 5) = b.bono
+		and b.bowriter = c.mem_id
+		and c.mem_no != a.mem_no
+		and c.mem_no = #{memNo}
+	</select>
+	
+	<update id="statChange" parameterType="int">
+		update alarm
+		set
+			alarm_status = 1
+		where alarm_no = #{alarmNo}
+	</update>
+	
+	<update id="allReadUpdate" parameterType="int">
+		update alarm
+		set alarm_status = 1
+		where alarm_no in (
+			select alarm_no
+			from alarm
+			where alarm_status = 0
+			and alarm_receiver = #{memNo}
+			and alarm_type = '게시글'
+			
+			union all
+			
+			select a.alarm_no
+			from alarm a,
+				 board b,
+				 member c
+			where a.alarm_status = 0
+			and a.alarm_type = '댓글'
+			and substr(a.alarm_url,instr(a.alarm_url,'boNo=',-1) + 5) = b.bono
+			and b.bowriter = c.mem_id
+			and c.mem_no != a.mem_no
+			and c.mem_no = #{memNo}
+		)
+	</update>
+</mapper>
