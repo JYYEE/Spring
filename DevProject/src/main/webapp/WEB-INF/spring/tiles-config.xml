@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN" "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+<!-- Tiles 설정 -->
+<tiles-definitions>
+	<definition name="mainTemplate" template="/WEB-INF/views/mainTemplate.jsp">
+		<put-attribute name="header" value="/WEB-INF/views/tiles/header.jsp"/> 
+		<put-attribute name="footer" value="/WEB-INF/views/tiles/footer.jsp"/> 
+	</definition>
+	
+	<!-- 동적 페이지 정의 -->
+	<!-- name : return 부분의 jsp 파일 위치경로. -->
+	<definition name="notice/*" extends="mainTemplate">
+<!-- 	<definition name="*/*" extends="mainTemplate"> -->
+		<put-attribute name="content" value="/WEB-INF/views/noticeboard/{1}.jsp"/>
+<!-- 		<put-attribute name="content" value="/WEB-INF/views/noticeboard/{1}/{2}.jsp"/> 
+			{1}/{2}는 *가 몇번째인지 순위를 알려주기 위함. *이 {1}로 바인딩 됨. -->
+	</definition>
+	
+	<definition name="loginTemplate" template="/WEB-INF/views/loginTemplate.jsp"></definition>
+	<definition name="conn/*" extends="loginTemplate">
+		<put-attribute name="content" value="/WEB-INF/views/noticeboard/{1}.jsp"/>
+	</definition>
+</tiles-definitions>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 비어있지만 파일이 존재해야지 bean등록할 때 정상적으로 서버 메모리에 등록됨. -->
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.mapper.BoardMapper">
+	<!-- mapper와 연동되서 사용되면서 id가 메소드명과 일치하도록 사용. -->
+	<insert id="create" parameterType="board" useGeneratedKeys="true">
+		<selectKey keyProperty="boardNo" resultType="int" order="BEFORE">
+			select seq_board.nextval from dual
+		</selectKey>
+		insert into board(
+			board_no, title, content, writer, reg_date
+		) values (
+			#{boardNo}, #{title}, #{content}, #{writer}, sysdate
+		)
+	</insert>
+	
+	<select id="list" resultType="board">
+		select
+			board_no, title, content, writer, reg_date
+		from board
+		where 1=1
+		order by board_no desc
+	</select>
+	
+	<select id="read" parameterType="int" resultType="board">
+		select
+			board_no, title, content, writer, reg_date
+		from board
+		where board_no = #{boardNo}
+	</select>
+	
+	<update id="update" parameterType="board">
+		update board
+		set 
+			title = #{title},
+			content = #{content}
+		where board_no = #{boardNo}
+	</update>
+	<delete id="delete" parameterType="int">
+		delete from board where board_no2 = #{boardNo}
+	</delete>
+	
+	<select id="search" parameterType="board" resultType="board">
+		select
+			board_no, title, content, writer, reg_date
+		from board
+		where 1=1
+		<if test="title != null and title != ''">
+			and title like '%'||#{title}||'%'
+		</if>
+		order by board_no desc
+	</select> 
+</mapper>
