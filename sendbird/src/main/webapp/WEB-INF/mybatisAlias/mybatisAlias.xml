@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-config.dtd">
+
+ <configuration>
+<!--  	 <settings> -->
+<!--  	 	<setting name="mapUnderscoreToCamelCase" value="true"/> -->
+<!--  	 </settings> -->
+ 	
+ 	 <typeAliases>
+<!--  	 	<typeAlias type="패키지를 포함한 클래스명" alias="내가 사용할 별칭"/> -->
+ 	 	<typeAlias type="kr.or.ddit.vo.MemberVO" alias="memberVO"/>
+ 	 	<typeAlias type="kr.or.ddit.vo.BookVO" alias="bookVO"/>
+ 	 	<typeAlias type="kr.or.ddit.vo.ChatRoomVO" alias="chatRoomVO"/>
+ 	 	<typeAlias type="kr.or.ddit.vo.ChatMemVO" alias="chatMemVO"/>
+ 	 	<typeAlias type="kr.or.ddit.vo.ChattingVO" alias="chattingVO"/>
+ 	 	<typeAlias type="kr.or.ddit.vo.Books_manager" alias="bmVO"/>
+ 	 	<typeAlias type="kr.or.ddit.vo.BooksVO" alias="booksVO"/>
+ 	 	<typeAlias type="kr.or.ddit.vo.Pager_BookBO" alias="pbVO"/>
+ 	 </typeAliases>
+ </configuration>

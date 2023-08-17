@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="kr.or.ddit.mapper.MemberMapper">
+	<select id="idCheck" parameterType="memberVO" resultType="memberVO">
+		select 
+			mem_no, mem_id, mem_pw, mem_name, mem_regdate 
+		from member
+		where 
+			mem_id= #{mem_id} and mem_pw= #{mem_pw}
+	</select>
+	
+	<insert id="insertBook" parameterType="bookVO" useGeneratedKeys="true">
+	 <selectKey keyProperty="book_num" resultType="string" order="BEFORE"> 
+	 	select seq_book.nextval from dual
+	 </selectKey>
+		insert into
+			books (book_num, book_name, book_cover, book_isbn, book_date, book_price,
+					 book_author, book_summary, book_publisher)
+			values(#{book_num}, #{book_name}, #{book_cover}, #{book_isbn}, #{book_date}, #{book_price},
+					#{book_author}, #{book_summary}, #{book_publisher})		 
+	</insert>
+	
+	<select id="selectBook" resultType="bookVO" >
+		select
+			book_num, book_name, book_cover, book_isbn, book_date, book_price,
+			book_author, book_summary, book_publisher
+		from books
+	</select>
+	
+	<insert id="setChatRoom" parameterType="chatRoomVO" useGeneratedKeys="true">
+		<selectKey keyProperty="cr_no" resultType="string" order="BEFORE">
+			select seq_chatroom.nextval from dual
+		</selectKey>
+		insert into
+			chat_room (cr_no, cr_date, cr_end_date, cr_pw, 
+						cr_name, cr_content, cr_max_user, cr_cnt_user, cr_online_user)
+		values(#{cr_no}, sysdate, sysdate, #{cr_pw}, #{cr_name}, 
+				#{cr_content}, #{cr_max_user}, 1, 0)
+	</insert>
+	
+	<insert id="setChatUser" parameterType="map">
+		insert into
+			chat_mem (mem_id, cr_no, mem_nick, online_check, cr_master)
+			values(#{mvo.mem_id}, #{cr_no}, #{mvo.mem_name}, 'Y', 'Y')
+	</insert>
+	
+	<select id="getAllChatRoom" resultType="chatRoomVO">
+		select *
+		from chat_room
+	</select>
+	
+	<select id="allCheck" parameterType="chatRoomVO" resultType="chatRoomVO">
+		select * from chat_room 
+		where cr_no = #{cr_no}
+		and cr_pw = #{cr_pw}
+	</select>
+	
+	<select id="chatMemCheck" parameterType="chatMemVO" resultType="chatMemVO">
+		select * from chat_mem
+		where cr_no = #{cr_no}
+		and mem_id = #{mem_id}
+	</select> 
+	
+	<insert id="insertChatMem" parameterType="chatMemVO">
+		insert 
+		into chat_mem (mem_id, cr_no, mem_nick, online_check, cr_master)
+		values (#{mem_id}, #{cr_no}, #{mem_nick}, 'Y', 'N')
+	</insert>
+	
+	<update id="updateCntUser" parameterType="string">
+		update chat_room
+		set
+			cr_cnt_user = cr_cnt_user + 1,
+			cr_online_user = cr_online_user + 1
+		where cr_no = #{cr_no}  
+	</update>
+	
+	<update id="updateOnline" parameterType="chatMemVO">
+		update chat_mem
+		set 
+			online_check = 'Y'
+		where cr_no = #{cr_no}
+		and mem_id = #{mem_id}	
+	</update>
+	
+	<update id="updateOnlineUser" parameterType="string">
+		update chat_room
+		set
+			cr_online_user = cr_online_user + 1
+		where cr_no = #{cr_no}
+	</update>
+	
+	
+	<select id="getRoomInfo" parameterType="string" resultType="chatRoomVO">
+		select * from chat_room
+		where cr_no = #{cr_no}
+	</select>
+	
+	<select id="selectAllMem" parameterType="chatMemVO" resultType="chatMemVO">
+		select * from chat_mem
+		where mem_id != #{mem_id}
+		and cr_no = #{cr_no}
+	</select>
+	
+	<select id="selectAllMem2" parameterType="chatMemVO" resultType="chatMemVO">
+		select * from chat_mem
+		where cr_no = #{cr_no}
+	</select>	
+	
+	<update id="closdeChatRoom" parameterType="string">
+		update chat_room
+		set
+			cr_online_user = cr_online_user - 1
+		where cr_no = #{cr_no}
+	</update>
+	
+	<update id="closdeChatMem" parameterType="chatMemVO">
+		update chat_mem
+		set 
+			online_check = 'N'
+		where cr_no = #{cr_no}
+		and mem_id = #{mem_id}
+	</update>
+	
+	<insert id="insertBooks" parameterType="booksVO">
+	 <selectKey keyProperty="book_no" resultType="string" order="BEFORE"> 
+	 	select 'BK' || LPAD(SEQ_BK.NEXTVAL, 10,'0') from dual
+	 </selectKey>
+		insert into
+			books (book_no, book_title, book_content, book_cover, book_spmt_ymd, book_author,
+					 pub_nm, book_talt, ccg_b001, ccg_b002, ccg_b003)
+			values(#{book_no}, #{book_title}, #{book_content}, #{book_cover}, #{book_spmt_ymd}, #{book_author},
+					#{pub_nm}, #{book_talt}, #{ccg_b001}, #{ccg_b002},#{ccg_b003})		
+	</insert>
+	
+	<insert id="insertBookManager" parameterType="string">
+		insert into
+			books_manager (book_no)		 
+			values(#{book_no})		
+	</insert>
+	
+	<insert id="insertPaperBook" parameterType="booksVO">
+		insert into
+			paper_book (book_no, book_page_cnt, book_amt, book_ntsl_amt,book_isbn)		 
+		values(#{book_no},#{book_page_cnt},#{book_amt},#{book_ntsl_amt},#{book_isbn})	
+	</insert>
+	
+	<select id="selectOne" resultType="booksVO">
+		select * from books where rownum = 1
+	</select>
+  </mapper>
